@@ -1,0 +1,175 @@
+{
+  "generated_at": "2026-05-24T17:41:19.914155",
+  "target": "http://localhost:8081",
+  "mode": "hardened",
+  "summary": {
+    "total_checks": 15,
+    "failed": 1,
+    "passed": 14,
+    "risk_score": 15,
+    "risk_level": "Low",
+    "by_severity": {
+      "Medium": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "HDR-CSP",
+      "title": "Header present: Content-Security-Policy",
+      "severity": "Medium",
+      "status": "passed",
+      "description": "Content-Security-Policy is present.",
+      "evidence": "Content-Security-Policy: default-src 'self'",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "HDR-XFO",
+      "title": "Header present: X-Frame-Options",
+      "severity": "Medium",
+      "status": "passed",
+      "description": "X-Frame-Options is present.",
+      "evidence": "X-Frame-Options: DENY",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "HDR-XCTO",
+      "title": "Header present: X-Content-Type-Options",
+      "severity": "Low",
+      "status": "passed",
+      "description": "X-Content-Type-Options is present.",
+      "evidence": "X-Content-Type-Options: nosniff",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "HDR-RP",
+      "title": "Header present: Referrer-Policy",
+      "severity": "Low",
+      "status": "passed",
+      "description": "Referrer-Policy is present.",
+      "evidence": "Referrer-Policy: no-referrer",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "HDR-PP",
+      "title": "Header present: Permissions-Policy",
+      "severity": "Low",
+      "status": "passed",
+      "description": "Permissions-Policy is present.",
+      "evidence": "Permissions-Policy: geolocation=(), microphone=(), camera=()",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "SRV-001",
+      "title": "Server header present but no version",
+      "severity": "Low",
+      "status": "passed",
+      "description": "Server header present without version disclosure.",
+      "evidence": "Server: nginx",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /static/env-demo.txt",
+      "severity": "High",
+      "status": "passed",
+      "description": "/static/env-demo.txt returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8081/static/env-demo.txt",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /env-demo.txt",
+      "severity": "High",
+      "status": "passed",
+      "description": "/env-demo.txt returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8081/env-demo.txt",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /.env",
+      "severity": "High",
+      "status": "passed",
+      "description": "/.env returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8081/.env",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /.env.demo",
+      "severity": "High",
+      "status": "passed",
+      "description": "/.env.demo returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8081/.env.demo",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "DBG-001",
+      "title": "Debug endpoint not accessible",
+      "severity": "High",
+      "status": "passed",
+      "description": "/debug returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8081/debug",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "DIR-001",
+      "title": "Directory listing not detected",
+      "severity": "Medium",
+      "status": "passed",
+      "description": "/static/ does not appear to expose a directory listing.",
+      "evidence": "HTTP 404 — no listing indicators found",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "PORT-001",
+      "title": "PostgreSQL port 5432 not exposed on host",
+      "severity": "High",
+      "status": "passed",
+      "description": "Port 5432 is not accessible from the host.",
+      "evidence": "TCP connection to localhost:5432 refused or timed out",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "HSTS-001",
+      "title": "HSTS header missing",
+      "severity": "Medium",
+      "status": "failed",
+      "description": "The Strict-Transport-Security header is not present.",
+      "evidence": "Header 'Strict-Transport-Security' not found in response from http://localhost:8081",
+      "risk": "Without HSTS, browsers may connect over HTTP, enabling downgrade attacks.",
+      "recommendation": "Add 'Strict-Transport-Security: max-age=31536000; includeSubDomains' to nginx configuration."
+    },
+    {
+      "id": "CORS-001",
+      "title": "CORS header absent",
+      "severity": "Low",
+      "status": "passed",
+      "description": "No Access-Control-Allow-Origin header present — cross-origin requests are not explicitly permitted.",
+      "evidence": "Header 'Access-Control-Allow-Origin' not present in response",
+      "risk": "",
+      "recommendation": ""
+    }
+  ],
+  "limitations": [
+    "This is a local educational lab — not a production security audit.",
+    "Checks are simplified and rule-based.",
+    "This is not a penetration test.",
+    "All credentials are fake/demo values.",
+    "Results require manual validation before any action.",
+    "Port checks only test localhost — not representative of network exposure."
+  ]
+}

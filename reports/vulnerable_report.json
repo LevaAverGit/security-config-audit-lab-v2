@@ -1,0 +1,177 @@
+{
+  "generated_at": "2026-05-24T17:41:10.757695",
+  "target": "http://localhost:8080",
+  "mode": "vulnerable",
+  "summary": {
+    "total_checks": 15,
+    "failed": 10,
+    "passed": 5,
+    "risk_score": 100,
+    "risk_level": "Critical",
+    "by_severity": {
+      "Medium": 3,
+      "Low": 4,
+      "High": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "HDR-CSP",
+      "title": "Missing header: Content-Security-Policy",
+      "severity": "Medium",
+      "status": "failed",
+      "description": "The HTTP response does not include the Content-Security-Policy header.",
+      "evidence": "Header 'Content-Security-Policy' not present in response from http://localhost:8080",
+      "risk": "Browser security controls may not be enforced.",
+      "recommendation": "Add 'Content-Security-Policy' to server or nginx configuration."
+    },
+    {
+      "id": "HDR-XFO",
+      "title": "Missing header: X-Frame-Options",
+      "severity": "Medium",
+      "status": "failed",
+      "description": "The HTTP response does not include the X-Frame-Options header.",
+      "evidence": "Header 'X-Frame-Options' not present in response from http://localhost:8080",
+      "risk": "Browser security controls may not be enforced.",
+      "recommendation": "Add 'X-Frame-Options' to server or nginx configuration."
+    },
+    {
+      "id": "HDR-XCTO",
+      "title": "Missing header: X-Content-Type-Options",
+      "severity": "Low",
+      "status": "failed",
+      "description": "The HTTP response does not include the X-Content-Type-Options header.",
+      "evidence": "Header 'X-Content-Type-Options' not present in response from http://localhost:8080",
+      "risk": "Browser security controls may not be enforced.",
+      "recommendation": "Add 'X-Content-Type-Options' to server or nginx configuration."
+    },
+    {
+      "id": "HDR-RP",
+      "title": "Missing header: Referrer-Policy",
+      "severity": "Low",
+      "status": "failed",
+      "description": "The HTTP response does not include the Referrer-Policy header.",
+      "evidence": "Header 'Referrer-Policy' not present in response from http://localhost:8080",
+      "risk": "Browser security controls may not be enforced.",
+      "recommendation": "Add 'Referrer-Policy' to server or nginx configuration."
+    },
+    {
+      "id": "HDR-PP",
+      "title": "Missing header: Permissions-Policy",
+      "severity": "Low",
+      "status": "failed",
+      "description": "The HTTP response does not include the Permissions-Policy header.",
+      "evidence": "Header 'Permissions-Policy' not present in response from http://localhost:8080",
+      "risk": "Browser security controls may not be enforced.",
+      "recommendation": "Add 'Permissions-Policy' to server or nginx configuration."
+    },
+    {
+      "id": "SRV-001",
+      "title": "Server version disclosed",
+      "severity": "Low",
+      "status": "failed",
+      "description": "The Server header reveals software version information.",
+      "evidence": "Server: nginx/1.25.5",
+      "risk": "Version disclosure aids fingerprinting and targeted attacks.",
+      "recommendation": "Set 'server_tokens off' in nginx.conf."
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config file accessible: /static/env-demo.txt",
+      "severity": "High",
+      "status": "failed",
+      "description": "A configuration/demo file is publicly accessible at http://localhost:8080/static/env-demo.txt",
+      "evidence": "HTTP 200 — contains sensitive-looking demo values",
+      "risk": "Exposed demo configs reveal patterns used in real configs and may expose secrets if misconfigured.",
+      "recommendation": "Remove or restrict access to config/env files. Block via nginx location rule."
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /env-demo.txt",
+      "severity": "High",
+      "status": "passed",
+      "description": "/env-demo.txt returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8080/env-demo.txt",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /.env",
+      "severity": "High",
+      "status": "passed",
+      "description": "/.env returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8080/.env",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "ENV-001",
+      "title": "Demo config not accessible: /.env.demo",
+      "severity": "High",
+      "status": "passed",
+      "description": "/.env.demo returned HTTP 404",
+      "evidence": "HTTP 404 for http://localhost:8080/.env.demo",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "DBG-001",
+      "title": "Debug endpoint accessible and exposes config",
+      "severity": "High",
+      "status": "failed",
+      "description": "/debug is publicly accessible (HTTP 200) and appears to expose environment/config information.",
+      "evidence": "HTTP 200 for http://localhost:8080/debug; response contains debug indicators: True",
+      "risk": "Exposed debug endpoints may leak environment variables, credentials, and system info.",
+      "recommendation": "Disable debug endpoint in production. Return 404 or remove the route entirely."
+    },
+    {
+      "id": "DIR-001",
+      "title": "Directory listing not detected",
+      "severity": "Medium",
+      "status": "passed",
+      "description": "/static/ does not appear to expose a directory listing.",
+      "evidence": "HTTP 404 — no listing indicators found",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "PORT-001",
+      "title": "PostgreSQL port 5432 exposed on host",
+      "severity": "High",
+      "status": "failed",
+      "description": "Port 5432 (PostgreSQL) is accessible on localhost.",
+      "evidence": "TCP connection to localhost:5432 succeeded",
+      "risk": "Exposed database ports increase attack surface. Direct access enables brute-force and exploitation attempts.",
+      "recommendation": "Remove port mapping from docker-compose.yml. Database should only be accessible within the Docker network."
+    },
+    {
+      "id": "HSTS-001",
+      "title": "HSTS header missing",
+      "severity": "Medium",
+      "status": "failed",
+      "description": "The Strict-Transport-Security header is not present.",
+      "evidence": "Header 'Strict-Transport-Security' not found in response from http://localhost:8080",
+      "risk": "Without HSTS, browsers may connect over HTTP, enabling downgrade attacks.",
+      "recommendation": "Add 'Strict-Transport-Security: max-age=31536000; includeSubDomains' to nginx configuration."
+    },
+    {
+      "id": "CORS-001",
+      "title": "CORS header absent",
+      "severity": "Low",
+      "status": "passed",
+      "description": "No Access-Control-Allow-Origin header present — cross-origin requests are not explicitly permitted.",
+      "evidence": "Header 'Access-Control-Allow-Origin' not present in response",
+      "risk": "",
+      "recommendation": ""
+    }
+  ],
+  "limitations": [
+    "This is a local educational lab — not a production security audit.",
+    "Checks are simplified and rule-based.",
+    "This is not a penetration test.",
+    "All credentials are fake/demo values.",
+    "Results require manual validation before any action.",
+    "Port checks only test localhost — not representative of network exposure."
+  ]
+}

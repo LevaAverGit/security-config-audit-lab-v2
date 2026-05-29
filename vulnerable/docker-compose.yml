@@ -1,0 +1,54 @@
+# EDUCATIONAL LAB — VULNERABLE ENVIRONMENT
+# Credentials below are intentionally weak to demonstrate common misconfigurations.
+# Do NOT use these settings in any production or real environment.
+services:
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  app:
+    build: ./app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - DB_HOST=db
+      - DB_USER=admin
+      - DB_PASSWORD=admin123
+      - DB_NAME=demo_db
+      - SECRET_KEY=demo-secret-key-not-for-production
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=demo_db
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d demo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s

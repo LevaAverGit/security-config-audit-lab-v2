@@ -1,0 +1,53 @@
+# EDUCATIONAL LAB — HARDENED ENVIRONMENT
+# Demo credentials below are placeholders for the hardened lab scenario.
+# Do NOT use these settings in any production or real environment.
+services:
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  app:
+    build: ./app
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+      - DB_HOST=db
+      - DB_USER=appuser
+      - DB_PASSWORD=demo-app-password
+      - DB_NAME=demo_db
+      - SECRET_KEY=demo-hardened-secret-key
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  db:
+    image: postgres:15
+    # Port NOT exposed to host
+    environment:
+      - POSTGRES_USER=appuser
+      - POSTGRES_PASSWORD=demo-app-password
+      - POSTGRES_DB=demo_db
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d demo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s

@@ -1,0 +1,8 @@
+# DEMO CONFIGURATION FILE
+# This file is intentionally exposed for educational purposes.
+# These are FAKE/DEMO values — not real credentials.
+
+DEMO_SECRET_KEY=demo-secret
+DEMO_DB_PASSWORD=admin123
+DEMO_API_TOKEN=demo-token-not-real
+DEMO_ADMIN_EMAIL=admin@demo.local
