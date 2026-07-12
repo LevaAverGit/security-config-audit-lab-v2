@@ -1,6 +1,6 @@
 # Security Config Audit Lab
 
-[![CI](https://github.com/LevaAverGit/security-config-audit-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/LevaAverGit/security-config-audit-lab/actions/workflows/ci.yml)
+[![CI](https://github.com/LevaAverGit/security-config-audit-lab-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/LevaAverGit/security-config-audit-lab-v2/actions/workflows/ci.yml)
 
 Local Docker-based security lab for comparing vulnerable and hardened web infrastructure configurations. The project includes Docker Compose environments, a Python audit CLI, rule-based misconfiguration checks, risk scoring, before/after comparison, and Markdown/JSON reports.
 
