@@ -1,0 +1,26 @@
+# WAF layer: ModSecurity + OWASP Core Rule Set in front of the vulnerable app.
+#
+#   docker compose -f waf/docker-compose.yml up --build
+#
+# The CRS-nginx proxy listens on host port 8082 and forwards clean traffic to the
+# app while blocking requests that trip the OWASP CRS (SQLi, XSS, traversal, ...).
+services:
+  waf:
+    image: owasp/modsecurity-crs:nginx
+    environment:
+      - BACKEND=http://app:5000
+      - MODSEC_RULE_ENGINE=On
+      - PARANOIA=1
+      - BLOCKING_PARANOIA=1
+      - ANOMALY_INBOUND=5
+      - ANOMALY_OUTBOUND=4
+      - MODSEC_AUDIT_LOG=/dev/stdout
+    ports:
+      - "8082:8080"
+    depends_on:
+      - app
+
+  app:
+    build: ../vulnerable/app
+    expose:
+      - "5000"

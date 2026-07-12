@@ -41,6 +41,7 @@ audit/checks/
     port_exposure_check.py← TCP port scan for DB port
     cors_check.py         ← CORS wildcard origin
     cookie_security_check.py ← Set-Cookie Secure/HttpOnly/SameSite flags
+    waf_check.py          ← WAF presence probe (attack payload → 403)
 ```
 
 Each check module exports exactly one function with signature:
@@ -48,6 +49,19 @@ Each check module exports exactly one function with signature:
 def check_*(target: str) -> List[Finding]:
 ```
 This uniform interface makes checks independently testable and trivially composable.
+
+## WAF Layer (optional)
+
+Beyond configuration auditing, the repo ships an optional **Web Application
+Firewall** stack — ModSecurity with the OWASP Core Rule Set — in front of the
+vulnerable app, plus a `WAF presence` audit check that verifies it:
+
+```bash
+docker compose -f waf/docker-compose.yml up --build
+# Attack payloads are blocked with HTTP 403 before reaching the app.
+```
+
+See [docs/WAF.md](docs/WAF.md) for the full walkthrough and expected output.
 
 ## How to Add a New Audit Check
 
@@ -90,6 +104,8 @@ Docker lab → HTTP checks → findings → risk score → Markdown/JSON reports
 - HSTS header check
 - CORS policy check (wildcard origin detection)
 - Cookie security check (Secure / HttpOnly / SameSite flags)
+- WAF presence check (attack payload blocked with 403/406)
+- Optional ModSecurity + OWASP CRS WAF stack (`waf/`, see [docs/WAF.md](docs/WAF.md))
 - Risk scoring capped at 100/100
 - Markdown and JSON reports
 - Pytest coverage — all check modules covered by unit tests using mocks (no Docker required)
