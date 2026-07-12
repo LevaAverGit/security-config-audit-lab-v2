@@ -4,6 +4,8 @@
 
 Local Docker-based security lab for comparing vulnerable and hardened web infrastructure configurations. The project includes Docker Compose environments, a Python audit CLI, rule-based misconfiguration checks, risk scoring, before/after comparison, and Markdown/JSON reports.
 
+**Quick look:** see [docs/DEMO.md](docs/DEMO.md) for a captured audit run — the risk score drops from **100/100 (Critical)** on the vulnerable stack to **15/100 (Low)** on the hardened one.
+
 ## Overview
 
 The lab runs two independent Docker Compose stacks:
