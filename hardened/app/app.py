@@ -1,11 +1,11 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, make_response
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 
 @app.route("/")
 def index():
-    return """
+    resp = make_response("""
     <html><body>
     <h1>Security Config Audit Lab</h1>
     <p>Mode: <strong>HARDENED</strong></p>
@@ -13,7 +13,10 @@ def index():
       <li><a href="/health">/health</a></li>
     </ul>
     </body></html>
-    """
+    """)
+    # Session cookie hardened with Secure, HttpOnly, and SameSite=Strict
+    resp.set_cookie("session", "demo-session-value", secure=True, httponly=True, samesite="Strict")
+    return resp
 
 
 @app.route("/health")

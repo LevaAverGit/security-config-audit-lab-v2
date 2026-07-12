@@ -40,6 +40,7 @@ audit/checks/
     directory_listing_check.py ← autoindex detection
     port_exposure_check.py← TCP port scan for DB port
     cors_check.py         ← CORS wildcard origin
+    cookie_security_check.py ← Set-Cookie Secure/HttpOnly/SameSite flags
 ```
 
 Each check module exports exactly one function with signature:
@@ -88,6 +89,7 @@ Docker lab → HTTP checks → findings → risk score → Markdown/JSON reports
 - PostgreSQL port exposure check
 - HSTS header check
 - CORS policy check (wildcard origin detection)
+- Cookie security check (Secure / HttpOnly / SameSite flags)
 - Risk scoring capped at 100/100
 - Markdown and JSON reports
 - Pytest coverage — all check modules covered by unit tests using mocks (no Docker required)

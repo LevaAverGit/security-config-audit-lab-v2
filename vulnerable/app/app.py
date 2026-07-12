@@ -1,12 +1,12 @@
 import os
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, make_response, send_from_directory
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 
 @app.route("/")
 def index():
-    return """
+    resp = make_response("""
     <html><body>
     <h1>Security Config Audit Lab</h1>
     <p>Mode: <strong>VULNERABLE</strong></p>
@@ -16,7 +16,10 @@ def index():
       <li><a href="/static/env-demo.txt">/static/env-demo.txt</a></li>
     </ul>
     </body></html>
-    """
+    """)
+    # VULNERABILITY: session cookie set without Secure / HttpOnly / SameSite flags
+    resp.set_cookie("session", "demo-session-value")
+    return resp
 
 
 @app.route("/health")
