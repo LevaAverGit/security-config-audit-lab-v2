@@ -16,6 +16,7 @@ from audit.checks.hsts_check import check_hsts
 from audit.checks.cors_check import check_cors
 from audit.checks.cookie_security_check import check_cookie_security
 from audit.checks.waf_check import check_waf
+from audit.checks.http_methods_check import check_http_methods
 from audit.report_generator import generate_markdown_report, generate_json_report, save_report
 from audit.scoring import calculate_total_score, score_to_risk_level
 
@@ -37,6 +38,7 @@ def run_audit(target: str, mode: str) -> AuditResult:
         ("CORS policy", check_cors(target)),
         ("Cookie security", check_cookie_security(target)),
         ("WAF presence", check_waf(target)),
+        ("HTTP methods", check_http_methods(target)),
     ]
 
     for name, findings in checks:

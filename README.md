@@ -42,6 +42,7 @@ audit/checks/
     cors_check.py         ← CORS wildcard origin
     cookie_security_check.py ← Set-Cookie Secure/HttpOnly/SameSite flags
     waf_check.py          ← WAF presence probe (attack payload → 403)
+    http_methods_check.py ← dangerous HTTP methods (TRACE/PUT/DELETE) via OPTIONS
 ```
 
 Each check module exports exactly one function with signature:
@@ -105,6 +106,7 @@ Docker lab → HTTP checks → findings → risk score → Markdown/JSON reports
 - CORS policy check (wildcard origin detection)
 - Cookie security check (Secure / HttpOnly / SameSite flags)
 - WAF presence check (attack payload blocked with 403/406)
+- HTTP methods check (flags TRACE / PUT / DELETE via OPTIONS)
 - Optional ModSecurity + OWASP CRS WAF stack (`waf/`, see [docs/WAF.md](docs/WAF.md))
 - Risk scoring capped at 100/100
 - Markdown and JSON reports
