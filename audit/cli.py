@@ -22,6 +22,24 @@ from audit.checks.technology_disclosure_check import check_technology_disclosure
 from audit.report_generator import generate_markdown_report, generate_json_report, save_report
 from audit.scoring import calculate_total_score, score_to_risk_level
 
+_SEVERITY_ORDER = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+
+
+def gating_exit_code(findings, fail_on: str) -> int:
+    """Return 1 if any failed/warning finding is at or above the fail_on severity, else 0.
+
+    Lets the audit gate a CI pipeline (e.g. `--fail-on high`). fail_on="none" disables gating.
+    """
+    if fail_on == "none":
+        return 0
+    threshold = _SEVERITY_ORDER[fail_on]
+    worst = max(
+        (_SEVERITY_ORDER.get(f.severity.lower(), 0)
+         for f in findings if f.status in ("failed", "warning")),
+        default=0,
+    )
+    return 1 if worst >= threshold else 0
+
 
 def run_audit(target: str, mode: str) -> AuditResult:
     result = AuditResult(target=target, mode=mode)
@@ -62,6 +80,12 @@ def main() -> int:
     p.add_argument("--mode", choices=["vulnerable", "hardened"], default="vulnerable")
     p.add_argument("--output", default="reports/audit_report.md", help="Output .md file")
     p.add_argument("--json", metavar="FILE", help="Also save JSON report to this path")
+    p.add_argument(
+        "--fail-on",
+        choices=["critical", "high", "medium", "low", "none"],
+        default="none",
+        help="Exit non-zero if a failed finding at or above this severity exists (CI gating).",
+    )
     args = p.parse_args()
 
     result = run_audit(args.target, args.mode)
@@ -75,7 +99,10 @@ def main() -> int:
         json_path = save_report(json_report, args.json)
         print(f"[+] JSON report saved: {json_path}", file=sys.stderr)
 
-    return 0
+    code = gating_exit_code(result.findings, args.fail_on)
+    if code:
+        print(f"[!] Findings at or above '{args.fail_on}' severity — failing for CI gating.", file=sys.stderr)
+    return code
 
 
 if __name__ == "__main__":
