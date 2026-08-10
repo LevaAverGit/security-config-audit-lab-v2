@@ -20,7 +20,7 @@ The **audit CLI** makes HTTP requests to the target, runs rule-based checks, com
 - **Pluggable check architecture** — each check is an independent module in `audit/checks/` returning a typed `Finding` list; adding a new check requires no changes to existing code
 - **Typed data model** — `Finding` and `AuditResult` dataclasses with explicit severity/status fields; no stringly-typed result handling
 - **Deterministic scoring** — `scoring.py` maps severity to fixed weights with a hard cap; score is reproducible and unit-tested
-- **Zero live-infrastructure tests** — all 96 tests use `unittest.mock` to patch HTTP responses; Docker is never required to run the test suite
+- **Zero live-infrastructure tests** — all 104 tests use `unittest.mock` to patch HTTP responses; Docker is never required to run the test suite
 - **Dual report format** — same `AuditResult` object serialised to both Markdown (human readable) and JSON (machine readable / downstream tooling)
 - **Structured CLI** — `argparse`-based CLI with `--target`, `--mode`, `--output`, `--json` flags; exit codes reflect pass/fail
 
@@ -255,7 +255,7 @@ python3 -m pytest tests/ -v
 make test
 ```
 
-**96 tests passing.** Tests do not require Docker or a running network target.
+**104 tests passing.** Tests do not require Docker or a running network target.
 
 Every check module has a dedicated test file. Each test patches `requests.get` via
 `unittest.mock` and covers:

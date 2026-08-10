@@ -2,7 +2,7 @@
 
 ## Test Strategy
 
-All 72 tests run without Docker, without a live network target, and without
+All 104 tests run without Docker, without a live network target, and without
 any external services. HTTP calls are intercepted by `unittest.mock.patch`.
 
 ```bash
@@ -34,7 +34,7 @@ Each check module has a dedicated test file:
 
 ## Unit vs. Integration Tests
 
-**Unit tests (all 72):** Mock `requests.get` and test each check function in isolation.
+**Unit tests (all 104):** Mock `requests.get` and test each check function in isolation.
 No network calls, no Docker, no filesystem side effects (except `test_report_generator.py`
 which writes to a temp directory).
 
