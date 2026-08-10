@@ -132,5 +132,5 @@ def generate_json_report(result: AuditResult) -> str:
 def save_report(content: str, output_path: str) -> Path:
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content)
+    path.write_text(content, encoding="utf-8")
     return path
