@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from audit.models import AuditResult, Finding
-from audit.report_generator import generate_markdown_report, generate_json_report
+from audit.report_generator import generate_markdown_report, generate_json_report, save_report
 
 
 def _finding(severity: str = "High", status: str = "failed") -> Finding:
@@ -91,3 +91,12 @@ def test_json_report_has_limitations():
     data = json.loads(js)
     assert "limitations" in data
     assert len(data["limitations"]) > 0
+
+
+def test_save_report_round_trips_utf8(tmp_path):
+    md = generate_markdown_report(_result())
+    out = tmp_path / "nested" / "report.md"
+    path = save_report(md, str(out))
+    # Parent directories are created and the non-ASCII content survives the round-trip.
+    assert path.exists()
+    assert path.read_text(encoding="utf-8") == md
