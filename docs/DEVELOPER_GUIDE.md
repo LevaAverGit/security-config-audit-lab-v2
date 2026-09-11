@@ -9,15 +9,20 @@ security-config-audit-lab/
 │   ├── models.py              # Finding, AuditResult dataclasses
 │   ├── scoring.py             # Severity weights, risk level calculation
 │   ├── report_generator.py    # Markdown + JSON serialisation
-│   └── checks/
+│   └── checks/                # 13 check modules, one per file
 │       ├── headers_check.py   # Security headers (CSP, XFO, XCTO, RP, PP)
 │       ├── hsts_check.py      # Strict-Transport-Security
+│       ├── https_redirect_check.py
 │       ├── server_tokens_check.py
+│       ├── technology_disclosure_check.py  # X-Powered-By
 │       ├── debug_check.py     # /debug endpoint exposure
 │       ├── env_exposure_check.py
 │       ├── directory_listing_check.py
 │       ├── port_exposure_check.py  # TCP port scan
-│       └── cors_check.py
+│       ├── cors_check.py
+│       ├── cookie_security_check.py
+│       ├── http_methods_check.py
+│       └── waf_check.py       # WAF presence probe
 ├── tests/                     # pytest tests (no Docker required)
 ├── vulnerable/                # Intentionally misconfigured Docker stack
 │   ├── docker-compose.yml

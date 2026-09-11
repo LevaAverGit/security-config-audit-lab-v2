@@ -47,23 +47,26 @@ def run_audit(target: str, mode: str) -> AuditResult:
 
     print(f"[*] Auditing {target} (mode: {mode})", file=sys.stderr)
 
+    # (name, callable) pairs — invoked in the loop so progress is printed as each
+    # check actually runs, not after all of them have already executed.
     checks = [
-        ("Security headers", check_security_headers(target)),
-        ("Server tokens", check_server_tokens(target)),
-        ("Env file exposure", check_env_exposure(target)),
-        ("Debug endpoint", check_debug_endpoint(target)),
-        ("Directory listing", check_directory_listing(target)),
-        ("Port exposure", check_port_exposure(host)),
-        ("HSTS", check_hsts(target)),
-        ("CORS policy", check_cors(target)),
-        ("Cookie security", check_cookie_security(target)),
-        ("WAF presence", check_waf(target)),
-        ("HTTP methods", check_http_methods(target)),
-        ("HTTPS redirect", check_https_redirect(target)),
-        ("Technology disclosure", check_technology_disclosure(target)),
+        ("Security headers", lambda: check_security_headers(target)),
+        ("Server tokens", lambda: check_server_tokens(target)),
+        ("Env file exposure", lambda: check_env_exposure(target)),
+        ("Debug endpoint", lambda: check_debug_endpoint(target)),
+        ("Directory listing", lambda: check_directory_listing(target)),
+        ("Port exposure", lambda: check_port_exposure(host)),
+        ("HSTS", lambda: check_hsts(target)),
+        ("CORS policy", lambda: check_cors(target)),
+        ("Cookie security", lambda: check_cookie_security(target)),
+        ("WAF presence", lambda: check_waf(target)),
+        ("HTTP methods", lambda: check_http_methods(target)),
+        ("HTTPS redirect", lambda: check_https_redirect(target)),
+        ("Technology disclosure", lambda: check_technology_disclosure(target)),
     ]
 
-    for name, findings in checks:
+    for name, run_check in checks:
+        findings = run_check()
         result.findings.extend(findings)
         failed_count = sum(1 for f in findings if f.status in ("failed", "warning"))
         print(f"    [{name}] {len(findings)} checks, {failed_count} failed", file=sys.stderr)

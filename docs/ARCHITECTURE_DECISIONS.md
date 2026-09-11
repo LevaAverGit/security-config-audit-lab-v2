@@ -51,7 +51,7 @@ one function with a uniform signature: `def check_*(target: str) -> List[Finding
 
 **Trade-off:** Checks cannot easily share HTTP session state (e.g., re-use a
 connection). Each check makes its own HTTP request to the target. Acceptable
-for the current check count (8 checks, ~10 requests total).
+for the current check count (13 checks, ~15 requests total).
 
 ---
 

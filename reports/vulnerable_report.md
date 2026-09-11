@@ -4,20 +4,20 @@
 
 - **URL:** http://localhost:8080
 - **Mode:** vulnerable
-- **Date:** 2026-05-24 17:41:10
+- **Date:** 2026-09-11 03:23:02
 
 ## Executive Summary
 
 | Field | Value |
 |---|---|
-| Total checks run | 15 |
-| Failed / Warning | 10 |
-| Passed | 5 |
+| Total checks run | 20 |
+| Failed / Warning | 13 |
+| Passed | 7 |
 | Risk score | 100/100 |
 | Risk level | Critical |
 | 🟠 High findings | 3 |
-| 🟡 Medium findings | 3 |
-| 🟢 Low findings | 4 |
+| 🟡 Medium findings | 5 |
+| 🟢 Low findings | 5 |
 
 ## Findings
 
@@ -71,7 +71,7 @@
 - **Severity:** 🟢 Low
 - **Status:** failed
 - **Description:** The Server header reveals software version information.
-- **Evidence:** `Server: nginx/1.25.5`
+- **Evidence:** `Server: nginx/1.25.3`
 - **Risk:** Version disclosure aids fingerprinting and targeted attacks.
 - **Recommendation:** Set 'server_tokens off' in nginx.conf.
 
@@ -146,6 +146,47 @@
 - **Description:** No Access-Control-Allow-Origin header present — cross-origin requests are not explicitly permitted.
 - **Evidence:** `Header 'Access-Control-Allow-Origin' not present in response`
 
+### ❌ COOKIE-001 — Cookie missing security flags: Secure, HttpOnly, SameSite
+
+- **Severity:** 🟡 Medium
+- **Status:** failed
+- **Description:** A cookie is set without one or more of the Secure, HttpOnly, and SameSite attributes.
+- **Evidence:** `Set-Cookie: session=demo-session-value`
+- **Risk:** Missing HttpOnly exposes the cookie to theft via XSS; missing Secure allows it to travel over plain HTTP; missing SameSite enables CSRF.
+- **Recommendation:** Set 'Secure; HttpOnly; SameSite=Strict' on session cookies.
+
+### ⚠️ WAF-001 — No WAF detected in front of the application
+
+- **Severity:** 🟢 Low
+- **Status:** warning
+- **Description:** An obvious XSS/SQLi payload was not blocked; no web application firewall appears to be filtering requests.
+- **Evidence:** `Attack payload returned HTTP 200 (expected 403/406 if a WAF were present)`
+- **Risk:** Without a WAF, exploit attempts reach the application directly, removing a layer of defence-in-depth.
+- **Recommendation:** Deploy a WAF such as ModSecurity with the OWASP Core Rule Set in front of the app (see docs/WAF.md).
+
+### ✅ HTTP-METHODS-001 — No dangerous HTTP methods enabled
+
+- **Severity:** 🟢 Low
+- **Status:** passed
+- **Description:** The server does not advertise TRACE, TRACK, CONNECT, PUT, or DELETE.
+- **Evidence:** `Allow: OPTIONS, HEAD, GET`
+
+### ❌ HTTPS-REDIRECT-001 — HTTP is not redirected to HTTPS
+
+- **Severity:** 🟡 Medium
+- **Status:** failed
+- **Description:** Plain HTTP request returned HTTP 200 without redirecting to HTTPS.
+- **Evidence:** `HTTP 200, no Location header`
+- **Risk:** Traffic served over plain HTTP can be intercepted or modified (MITM) and is exposed to SSL-stripping downgrade attacks.
+- **Recommendation:** Configure the web server to 301-redirect all HTTP traffic to HTTPS, and pair it with HSTS.
+
+### ✅ XPB-001 — X-Powered-By header absent
+
+- **Severity:** 🟢 Low
+- **Status:** passed
+- **Description:** No X-Powered-By header in response.
+- **Evidence:** `X-Powered-By header not present`
+
 ## Before/After Comparison
 
 
@@ -155,7 +196,7 @@
 | Debug endpoint `/debug` | ❌ Exposed, leaks env vars | ✅ Returns 404 |
 | Demo config `/static/env-demo.txt` | ❌ Publicly accessible | ✅ Blocked (404) |
 | PostgreSQL port 5432 | ❌ Exposed on host | ✅ Internal only |
-| Directory listing `/static/` | ❌ Enabled | ✅ Disabled |
+| Session cookie flags | ❌ No Secure/HttpOnly/SameSite | ✅ Secure; HttpOnly; SameSite=Strict |
 | Server version disclosure | ❌ May expose nginx version | ✅ server_tokens off |
 
 > **Note:** Findings in this report represent **intentionally misconfigured** settings in a local educational lab. Run `hardened` mode to see the improved state.

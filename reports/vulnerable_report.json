@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-05-24T17:41:10.757695",
+  "generated_at": "2026-09-11T03:23:02.122368",
   "target": "http://localhost:8080",
   "mode": "vulnerable",
   "summary": {
-    "total_checks": 15,
-    "failed": 10,
-    "passed": 5,
+    "total_checks": 20,
+    "failed": 13,
+    "passed": 7,
     "risk_score": 100,
     "risk_level": "Critical",
     "by_severity": {
-      "Medium": 3,
-      "Low": 4,
+      "Medium": 5,
+      "Low": 5,
       "High": 3
     }
   },
@@ -71,7 +71,7 @@
       "severity": "Low",
       "status": "failed",
       "description": "The Server header reveals software version information.",
-      "evidence": "Server: nginx/1.25.5",
+      "evidence": "Server: nginx/1.25.3",
       "risk": "Version disclosure aids fingerprinting and targeted attacks.",
       "recommendation": "Set 'server_tokens off' in nginx.conf."
     },
@@ -162,6 +162,56 @@
       "status": "passed",
       "description": "No Access-Control-Allow-Origin header present — cross-origin requests are not explicitly permitted.",
       "evidence": "Header 'Access-Control-Allow-Origin' not present in response",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "COOKIE-001",
+      "title": "Cookie missing security flags: Secure, HttpOnly, SameSite",
+      "severity": "Medium",
+      "status": "failed",
+      "description": "A cookie is set without one or more of the Secure, HttpOnly, and SameSite attributes.",
+      "evidence": "Set-Cookie: session=demo-session-value",
+      "risk": "Missing HttpOnly exposes the cookie to theft via XSS; missing Secure allows it to travel over plain HTTP; missing SameSite enables CSRF.",
+      "recommendation": "Set 'Secure; HttpOnly; SameSite=Strict' on session cookies."
+    },
+    {
+      "id": "WAF-001",
+      "title": "No WAF detected in front of the application",
+      "severity": "Low",
+      "status": "warning",
+      "description": "An obvious XSS/SQLi payload was not blocked; no web application firewall appears to be filtering requests.",
+      "evidence": "Attack payload returned HTTP 200 (expected 403/406 if a WAF were present)",
+      "risk": "Without a WAF, exploit attempts reach the application directly, removing a layer of defence-in-depth.",
+      "recommendation": "Deploy a WAF such as ModSecurity with the OWASP Core Rule Set in front of the app (see docs/WAF.md)."
+    },
+    {
+      "id": "HTTP-METHODS-001",
+      "title": "No dangerous HTTP methods enabled",
+      "severity": "Low",
+      "status": "passed",
+      "description": "The server does not advertise TRACE, TRACK, CONNECT, PUT, or DELETE.",
+      "evidence": "Allow: OPTIONS, HEAD, GET",
+      "risk": "",
+      "recommendation": ""
+    },
+    {
+      "id": "HTTPS-REDIRECT-001",
+      "title": "HTTP is not redirected to HTTPS",
+      "severity": "Medium",
+      "status": "failed",
+      "description": "Plain HTTP request returned HTTP 200 without redirecting to HTTPS.",
+      "evidence": "HTTP 200, no Location header",
+      "risk": "Traffic served over plain HTTP can be intercepted or modified (MITM) and is exposed to SSL-stripping downgrade attacks.",
+      "recommendation": "Configure the web server to 301-redirect all HTTP traffic to HTTPS, and pair it with HSTS."
+    },
+    {
+      "id": "XPB-001",
+      "title": "X-Powered-By header absent",
+      "severity": "Low",
+      "status": "passed",
+      "description": "No X-Powered-By header in response.",
+      "evidence": "X-Powered-By header not present",
       "risk": "",
       "recommendation": ""
     }

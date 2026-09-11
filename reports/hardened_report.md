@@ -4,18 +4,19 @@
 
 - **URL:** http://localhost:8081
 - **Mode:** hardened
-- **Date:** 2026-05-24 17:41:19
+- **Date:** 2026-09-11 03:23:01
 
 ## Executive Summary
 
 | Field | Value |
 |---|---|
-| Total checks run | 15 |
-| Failed / Warning | 1 |
-| Passed | 14 |
-| Risk score | 15/100 |
-| Risk level | Low |
-| 🟡 Medium findings | 1 |
+| Total checks run | 20 |
+| Failed / Warning | 3 |
+| Passed | 17 |
+| Risk score | 35/100 |
+| Risk level | Medium |
+| 🟡 Medium findings | 2 |
+| 🟢 Low findings | 1 |
 
 ## Findings
 
@@ -101,7 +102,7 @@
 - **Severity:** 🟡 Medium
 - **Status:** passed
 - **Description:** /static/ does not appear to expose a directory listing.
-- **Evidence:** `HTTP 404 — no listing indicators found`
+- **Evidence:** `HTTP 200 — no listing indicators found`
 
 ### ✅ PORT-001 — PostgreSQL port 5432 not exposed on host
 
@@ -126,6 +127,45 @@
 - **Description:** No Access-Control-Allow-Origin header present — cross-origin requests are not explicitly permitted.
 - **Evidence:** `Header 'Access-Control-Allow-Origin' not present in response`
 
+### ✅ COOKIE-001 — Cookie sets Secure, HttpOnly, and SameSite
+
+- **Severity:** 🟢 Low
+- **Status:** passed
+- **Description:** The cookie includes the Secure, HttpOnly, and SameSite attributes.
+- **Evidence:** `Set-Cookie: session=demo-session-value; Secure; HttpOnly; SameSite=Strict`
+
+### ⚠️ WAF-001 — No WAF detected in front of the application
+
+- **Severity:** 🟢 Low
+- **Status:** warning
+- **Description:** An obvious XSS/SQLi payload was not blocked; no web application firewall appears to be filtering requests.
+- **Evidence:** `Attack payload returned HTTP 200 (expected 403/406 if a WAF were present)`
+- **Risk:** Without a WAF, exploit attempts reach the application directly, removing a layer of defence-in-depth.
+- **Recommendation:** Deploy a WAF such as ModSecurity with the OWASP Core Rule Set in front of the app (see docs/WAF.md).
+
+### ✅ HTTP-METHODS-001 — No dangerous HTTP methods enabled
+
+- **Severity:** 🟢 Low
+- **Status:** passed
+- **Description:** The server does not advertise TRACE, TRACK, CONNECT, PUT, or DELETE.
+- **Evidence:** `Allow: OPTIONS, HEAD, GET`
+
+### ❌ HTTPS-REDIRECT-001 — HTTP is not redirected to HTTPS
+
+- **Severity:** 🟡 Medium
+- **Status:** failed
+- **Description:** Plain HTTP request returned HTTP 200 without redirecting to HTTPS.
+- **Evidence:** `HTTP 200, no Location header`
+- **Risk:** Traffic served over plain HTTP can be intercepted or modified (MITM) and is exposed to SSL-stripping downgrade attacks.
+- **Recommendation:** Configure the web server to 301-redirect all HTTP traffic to HTTPS, and pair it with HSTS.
+
+### ✅ XPB-001 — X-Powered-By header absent
+
+- **Severity:** 🟢 Low
+- **Status:** passed
+- **Description:** No X-Powered-By header in response.
+- **Evidence:** `X-Powered-By header not present`
+
 ## Before/After Comparison
 
 
@@ -135,7 +175,7 @@
 | Debug endpoint `/debug` | ❌ Exposed, leaks env vars | ✅ Returns 404 |
 | Demo config `/static/env-demo.txt` | ❌ Publicly accessible | ✅ Blocked (404) |
 | PostgreSQL port 5432 | ❌ Exposed on host | ✅ Internal only |
-| Directory listing `/static/` | ❌ Enabled | ✅ Disabled |
+| Session cookie flags | ❌ No Secure/HttpOnly/SameSite | ✅ Secure; HttpOnly; SameSite=Strict |
 | Server version disclosure | ❌ May expose nginx version | ✅ server_tokens off |
 
 > **Note:** Compare with the `vulnerable` mode report to see which findings were resolved by the hardening measures applied.

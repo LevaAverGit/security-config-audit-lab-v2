@@ -15,7 +15,7 @@ require touching `models.py`, `scoring.py`, or `report_generator.py`.
 2. Register in `audit/cli.py`:
    ```python
    from audit.checks.newcheck import check_my_feature
-   checks = [..., ("Label", check_my_feature(target))]
+   checks = [..., ("Label", lambda: check_my_feature(target))]
    ```
 3. Write tests in `tests/test_newcheck.py`
 

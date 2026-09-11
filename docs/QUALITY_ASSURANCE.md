@@ -27,6 +27,12 @@ Each check module has a dedicated test file:
 | `test_directory_listing_check.py` | `directory_listing_check.py` | Listing enabled / disabled / error |
 | `test_port_exposure_check.py` | `port_exposure_check.py` | Port open / closed |
 | `test_cors_check.py` | `cors_check.py` | Wildcard / specific origin / absent / warning |
+| `test_cookie_security_check.py` | `cookie_security_check.py` | Missing flags / partial / all present / no cookie / error |
+| `test_waf_check.py` | `waf_check.py` | Blocked (403/406) / not blocked (warning) / payload sent / error |
+| `test_http_methods_check.py` | `http_methods_check.py` | Dangerous methods / safe methods / no Allow header / error |
+| `test_https_redirect_check.py` | `https_redirect_check.py` | Redirect to HTTPS / no redirect / HTTP location / error |
+| `test_technology_disclosure_check.py` | `technology_disclosure_check.py` | X-Powered-By present / absent / error |
+| `test_cli_gating.py` | `cli.py` (`gating_exit_code`) | `--fail-on` thresholds / passed excluded / warning counted |
 | `test_scoring.py` | `scoring.py` | Weights / capping / risk levels / summarize |
 | `test_report_generator.py` | `report_generator.py` | Markdown structure / JSON structure / file save |
 
@@ -95,7 +101,7 @@ Before publishing a new report to `reports/`:
 - [ ] Run full audit: `python3 -m audit.cli --target http://localhost:8080 --mode vulnerable --output reports/vulnerable_report.md --json reports/vulnerable_report.json`
 - [ ] Hardened stack running on port 8081
 - [ ] Run full audit for hardened
-- [ ] Verify score in report matches expected (100 vulnerable, ~45 hardened)
+- [ ] Verify score in report matches expected (100 vulnerable, ~35 hardened — Medium; see docs/RISK_MODEL.md#score-examples)
 - [ ] Review `reports/*.md` renders correctly in a Markdown viewer
 - [ ] Commit updated reports with a `chore: update example reports` commit
 

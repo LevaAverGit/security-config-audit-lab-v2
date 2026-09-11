@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-from audit.models import AuditResult, Finding
+from audit.models import AuditResult
 from audit.scoring import calculate_total_score, score_to_risk_level, summarize_by_severity
 
 SEV_ICON = {"Critical": "🔴", "High": "🟠", "Medium": "🟡", "Low": "🟢"}
@@ -18,7 +18,7 @@ BEFORE_AFTER_TABLE = """
 | Debug endpoint `/debug` | ❌ Exposed, leaks env vars | ✅ Returns 404 |
 | Demo config `/static/env-demo.txt` | ❌ Publicly accessible | ✅ Blocked (404) |
 | PostgreSQL port 5432 | ❌ Exposed on host | ✅ Internal only |
-| Directory listing `/static/` | ❌ Enabled | ✅ Disabled |
+| Session cookie flags | ❌ No Secure/HttpOnly/SameSite | ✅ Secure; HttpOnly; SameSite=Strict |
 | Server version disclosure | ❌ May expose nginx version | ✅ server_tokens off |
 """
 

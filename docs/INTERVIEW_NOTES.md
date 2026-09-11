@@ -10,8 +10,10 @@ Junior-level framing: focused on configuration hardening and honest about scope.
 > I built a Docker-based security configuration lab that runs the same web stack twice —
 > once intentionally misconfigured, once hardened — and a Python audit CLI that checks
 > both, scores the risk, and produces a before/after report. The vulnerable stack scores
-> 100/100 Critical; the hardened stack drops to 15/100 Low. It demonstrates configuration
-> review and hardening thinking, not a production audit.
+> 100/100 Critical; the hardened stack drops to Medium, where the only remaining findings
+> are transport-layer controls (HSTS, HTTP→HTTPS redirect) that a plain-HTTP local lab
+> can't satisfy. It demonstrates configuration review and hardening thinking, not a
+> production audit.
 
 ---
 
@@ -20,17 +22,19 @@ Junior-level framing: focused on configuration hardening and honest about scope.
 - **Two environments:** a `vulnerable/` Docker Compose stack (port 8080) and a
   `hardened/` stack (port 8081) running Nginx + Flask + PostgreSQL. Same application,
   different configuration — so the report shows exactly what hardening changes.
-- **Audit CLI:** makes HTTP requests to the target and runs eight independent rule-based
-  checks — security headers, HSTS, server tokens, debug endpoint, config-file exposure,
-  directory listing, database port exposure, and CORS policy.
+- **Audit CLI:** makes HTTP requests to the target and runs 13 independent rule-based
+  checks — security headers, HSTS, HTTP→HTTPS redirect, server tokens, technology
+  disclosure, debug endpoint, config-file exposure, directory listing, database port
+  exposure, CORS policy, cookie flags, HTTP methods, and WAF presence.
 - **Risk scoring:** each finding maps to a fixed severity weight; the total is capped at
   100. The score is deterministic and unit-tested, so the same target always scores the
   same way.
-- **Reading 100 → 15:** the vulnerable stack accumulates Critical/High findings to the
-  100 cap; the hardened stack only has minor defense-in-depth gaps left, landing at 15
-  (Low). The delta is the value of the hardening work.
+- **Reading the drop:** the vulnerable stack accumulates Critical/High findings to the
+  100 cap; the hardened stack resolves every header, exposure, and network finding and
+  lands at Medium, with the residual being transport-layer checks (HSTS, HTTP→HTTPS
+  redirect) an HTTP-only lab can't satisfy. The delta is the value of the hardening work.
 - **Why not production:** the check set is intentionally small and focused on common
-  misconfiguration patterns, not comprehensive scanning — see `docs/LIMITATIONS` notes in
+  misconfiguration patterns, not comprehensive scanning — see the Limitations section in
   the README and `docs/RISK_MODEL.md`.
 
 ---
@@ -54,7 +58,7 @@ Junior-level framing: focused on configuration hardening and honest about scope.
 | Check architecture | `audit/checks/` | One function per check, uniform signature, independently testable |
 | Risk model | `docs/RISK_MODEL.md` | Severity weights, score cap, risk-level thresholds |
 | Audit checklist | `docs/AUDIT_CHECKLIST.md` | What each check looks for and how to verify a fix |
-| Vulnerable vs hardened | `reports/` | The before/after report — 100/100 vs 15/100 |
+| Vulnerable vs hardened | `reports/` | The before/after report — Critical (100/100) vs Medium |
 | Tests | `tests/` | Every check mocked with `unittest.mock`; no Docker needed to test |
 
 ---
@@ -91,7 +95,7 @@ Junior-level framing: focused on configuration hardening and honest about scope.
    coverage, and business-impact analysis per finding.
 
 8. **How did you test it?**
-   72 pytest tests. Each check patches `requests.get` via `unittest.mock` and covers
+   104 pytest tests. Each check patches `requests.get` via `unittest.mock` and covers
    all-missing, all-present, and network-error cases. No Docker required to run the suite.
 
 9. **What would change in production?**

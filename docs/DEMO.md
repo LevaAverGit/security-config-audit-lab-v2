@@ -18,7 +18,12 @@ $ python -m audit.cli --target http://127.0.0.1:8099 --mode vulnerable --output 
     [Port exposure] 1 checks, 1 failed
     [HSTS] 1 checks, 1 failed
     [CORS policy] 1 checks, 0 failed
-[+] Score: 95 — Risk level: Critical
+    [Cookie security] 1 checks, 0 failed
+    [WAF presence] 1 checks, 1 failed
+    [HTTP methods] 1 checks, 0 failed
+    [HTTPS redirect] 1 checks, 1 failed
+    [Technology disclosure] 1 checks, 0 failed
+[+] Score: 100 — Risk level: Critical
 [+] Report saved: report.md
 ```
 
@@ -28,15 +33,19 @@ Running the same audit against the two Docker stacks shipped in this repo shows
 the whole point of the lab — the risk score collapsing once the hardening is
 applied:
 
-| Target | Risk score | Risk level | Report |
-|---|---|---|---|
-| Vulnerable stack (port 8080) | **100/100** | 🔴 Critical | [reports/vulnerable_report.md](../reports/vulnerable_report.md) |
-| Hardened stack (port 8081) | **15/100** | 🟢 Low | [reports/hardened_report.md](../reports/hardened_report.md) |
+| Target | Risk level | Report |
+|---|---|---|
+| Vulnerable stack (port 8080) | 🔴 Critical (100/100) | [reports/vulnerable_report.md](../reports/vulnerable_report.md) |
+| Hardened stack (port 8081) | 🟡 Medium (35/100) | [reports/hardened_report.md](../reports/hardened_report.md) |
 
 The delta is driven by the hardened Nginx adding the security headers
-(CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, HSTS),
+(CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy),
 suppressing `Server` version tokens, blocking `.env`/config exposure, disabling
-the debug route, and not publishing the database port to the host.
+the debug route, hardening the session cookie, and not publishing the database
+port to the host. The residual Medium score comes from transport-layer checks: the
+lab serves plain HTTP, so the HSTS and HTTP→HTTPS-redirect checks cannot pass, plus
+the WAF-absence warning — the WAF is a separate stack (`waf/`). See
+[RISK_MODEL.md](RISK_MODEL.md#score-examples) for the score breakdown.
 
 ## Reproduce
 

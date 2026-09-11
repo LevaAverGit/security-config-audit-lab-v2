@@ -12,21 +12,24 @@ The actual reports from lab runs are in [`reports/`](../reports/).
 ## Executive Summary
 
 **Audit target:** Local Docker Compose web stack (Nginx + Flask + PostgreSQL)  
-**Audit date:** 2026-05-24  
+**Audit date:** 2026-09-11  
 **Scope:** HTTP endpoint security, server configuration, network exposure  
 **Method:** Automated rule-based checks via Python audit CLI  
 
 | Metric | Vulnerable stack | Hardened stack |
 |---|---|---|
-| Total checks | 15 | 15 |
-| Failed / Warning | 10 | 1 |
-| Risk score | 100 / 100 | 45 / 100 |
+| Total findings | 20 | 20 |
+| Failed / Warning | 13 | 3 |
+| Risk score | 100 / 100 | 35 / 100 |
 | Risk level | Critical | Medium |
 
 **Summary:** The vulnerable stack exhibits a combination of high-severity findings across
 server configuration, application endpoint exposure, and network architecture. The hardened
-stack addresses all critical and high-severity items. One medium-severity residual finding
-(CORS wildcard) remains in the hardened stack as an informational note.
+stack addresses the configuration and exposure findings. The three residual findings are
+transport-layer only: the missing HSTS header and the absent HTTP→HTTPS redirect are
+artifacts of the lab serving plain HTTP, where there is no HTTPS to enforce or redirect to,
+and the missing WAF is a defence-in-depth warning — the WAF ships as a separate stack
+(`waf/`). Figures mirror the committed reports in [`reports/`](../reports/).
 
 ---
 
@@ -34,7 +37,7 @@ stack addresses all critical and high-severity items. One medium-severity residu
 
 | Attribute | Detail |
 |---|---|
-| In scope | HTTP response headers, server version disclosure, debug endpoint, static file exposure, database port exposure, directory listing, HSTS, CORS policy |
+| In scope | HTTP response headers, server version disclosure, debug endpoint, static file exposure, database port exposure, directory listing, HSTS, CORS policy, cookie flags, HTTP methods, HTTPS redirect, technology disclosure, WAF presence |
 | Out of scope | TLS certificate validity, authentication logic, SQL injection, XSS, host OS hardening, dependency CVE scanning |
 | Authorization | Lab environment — no production systems involved |
 | Methodology | Black-box HTTP checks; no credentials provided to the scanner |
@@ -50,13 +53,18 @@ stack addresses all critical and high-severity items. One medium-severity residu
 | HDR-XCTO | Missing X-Content-Type-Options | Low | ❌ Failed | ✅ Passed |
 | HDR-RP | Missing Referrer-Policy | Low | ❌ Failed | ✅ Passed |
 | HDR-PP | Missing Permissions-Policy | Low | ❌ Failed | ✅ Passed |
-| HDR-HSTS | Missing Strict-Transport-Security | High | ❌ Failed | ⚠️ Warning (no HTTPS in lab) |
-| SRV-001 | Server version disclosed | Medium | ❌ Failed | ✅ Passed |
+| HSTS-001 | Missing Strict-Transport-Security | Medium | ❌ Failed | ❌ Failed (no HTTPS in lab) |
+| SRV-001 | Server version disclosed | Low | ❌ Failed | ✅ Passed |
 | DBG-001 | Debug endpoint accessible | High | ❌ Failed | ✅ Passed |
 | ENV-001 | Config file exposed | High | ❌ Failed | ✅ Passed |
-| NET-001 | Database port on host | High | ❌ Failed | ✅ Passed |
-| DIR-001 | Directory listing | Low | ❌ Failed | ✅ Passed |
-| CORS-001 | CORS wildcard origin | Medium | ❌ Failed | ⚠️ Warning |
+| PORT-001 | Database port on host | High | ❌ Failed | ✅ Passed |
+| DIR-001 | Directory listing | Medium | ✅ Passed | ✅ Passed |
+| CORS-001 | CORS wildcard origin | Medium | ✅ Passed | ✅ Passed |
+| COOKIE-001 | Session cookie missing Secure/HttpOnly/SameSite | Medium | ❌ Failed | ✅ Passed |
+| HTTPS-REDIRECT-001 | No HTTP→HTTPS redirect | Medium | ❌ Failed | ❌ Failed (no HTTPS in lab) |
+| WAF-001 | No WAF in front of app | Low | ⚠️ Warning | ⚠️ Warning |
+| HTTP-METHODS-001 | Dangerous HTTP methods enabled | Medium | ✅ Passed | ✅ Passed |
+| XPB-001 | Technology stack disclosed (`X-Powered-By`) | Low | ✅ Passed | ✅ Passed |
 
 ---
 
@@ -103,7 +111,7 @@ Confirm no environment variable names or values are present in the response.
 
 ---
 
-### Finding: NET-001 — Database Port Exposed on Host
+### Finding: PORT-001 — Database Port Exposed on Host
 
 **Severity:** High  
 **Status:** Failed (vulnerable) / Passed (hardened)
@@ -149,10 +157,9 @@ ports:
 
 | Priority | Finding | Owner | Effort | Verification |
 |---|---|---|---|---|
-| P1 — Immediate | DBG-001, ENV-001, NET-001 | Infrastructure / DevOps | Low (config change) | Automated check re-run |
-| P2 — High | HDR-HSTS | Infrastructure | Medium (requires HTTPS) | Automated check + manual |
-| P3 — Medium | HDR-CSP, HDR-XFO, SRV-001, CORS-001 | Infrastructure | Low (Nginx config) | Automated check re-run |
-| P4 — Low | HDR-XCTO, HDR-RP, HDR-PP, DIR-001 | Infrastructure | Low (Nginx config) | Automated check re-run |
+| P1 — High | DBG-001, ENV-001, PORT-001 | Infrastructure / DevOps | Low (config change) | Automated check re-run |
+| P2 — Medium | HDR-CSP, HDR-XFO, COOKIE-001, HSTS-001, HTTPS-REDIRECT-001 | Infrastructure | Low (Nginx config; HSTS/redirect need HTTPS) | Automated check re-run |
+| P3 — Low | HDR-XCTO, HDR-RP, HDR-PP, SRV-001 | Infrastructure | Low (Nginx config) | Automated check re-run |
 
 ---
 

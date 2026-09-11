@@ -4,7 +4,7 @@
 
 Local Docker-based security lab for comparing vulnerable and hardened web infrastructure configurations. The project includes Docker Compose environments, a Python audit CLI, rule-based misconfiguration checks, risk scoring, before/after comparison, and Markdown/JSON reports.
 
-**Quick look:** see [docs/DEMO.md](docs/DEMO.md) for a captured audit run — the risk score drops from **100/100 (Critical)** on the vulnerable stack to **15/100 (Low)** on the hardened one.
+**Quick look:** see [docs/DEMO.md](docs/DEMO.md) for a captured audit run — the risk drops from **Critical (100/100)** on the vulnerable stack to **Medium (35/100)** on the hardened one, where the residual findings are transport-layer controls (HSTS, HTTP→HTTPS redirect) that a plain-HTTP local lab cannot satisfy, plus the optional WAF that ships as a separate stack.
 
 ## Overview
 
@@ -135,7 +135,7 @@ security-config-audit-lab/
 │   ├── models.py
 │   ├── scoring.py
 │   ├── report_generator.py
-│   └── checks/
+│   └── checks/                 # 13 check modules (see Check Architecture above)
 │       ├── headers_check.py
 │       ├── server_tokens_check.py
 │       ├── env_exposure_check.py
@@ -143,8 +143,13 @@ security-config-audit-lab/
 │       ├── directory_listing_check.py
 │       ├── port_exposure_check.py
 │       ├── hsts_check.py
-│       └── cors_check.py
-├── reports/                    # Live audit reports
+│       ├── cors_check.py
+│       ├── cookie_security_check.py
+│       ├── waf_check.py
+│       ├── http_methods_check.py
+│       ├── https_redirect_check.py
+│       └── technology_disclosure_check.py
+├── reports/                    # Sample audit reports (baseline capture)
 ├── tests/                      # pytest tests (no Docker required)
 ├── requirements.txt
 └── LICENSE
@@ -211,8 +216,11 @@ docker compose down
 - Risk level: Critical
 
 **Hardened stack:**
-- Risk score: 15/100
-- Risk level: Low
+- Risk score: 35/100
+- Risk level: Medium — residual score comes only from transport-layer checks
+  (HSTS, HTTP→HTTPS redirect) that a plain-HTTP local lab cannot satisfy, plus
+  the optional WAF running as a separate stack. See
+  [docs/RISK_MODEL.md](docs/RISK_MODEL.md#score-examples) for the breakdown.
 
 ## Before/After Comparison
 
@@ -222,15 +230,18 @@ docker compose down
 | Debug endpoint `/debug` | Exposed, leaks env vars | Disabled (404) |
 | Demo config `/static/env-demo.txt` | Accessible | Not accessible (404) |
 | PostgreSQL port 5432 | Exposed on host | Internal only |
-| Directory listing `/static/` | Enabled / checked | Not detected |
+| Session cookie flags | No Secure/HttpOnly/SameSite | Secure; HttpOnly; SameSite=Strict |
 | Server version | nginx version exposed | Version not disclosed |
 
 ## Reports
 
-Live reports from a full audit run are included:
+Sample reports from a full audit run are included:
 
 - `reports/vulnerable_report.md` / `reports/vulnerable_report.json`
 - `reports/hardened_report.md` / `reports/hardened_report.json`
+
+These captures reflect the initial header/exposure/network check set; regenerate
+them with the run commands above to reflect the full current 13-check suite.
 
 ## Documentation
 

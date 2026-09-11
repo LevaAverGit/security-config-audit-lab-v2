@@ -95,11 +95,13 @@ from audit.checks.mycheck import check_my_feature
 
 checks = [
     ...
-    ("My feature name", check_my_feature(target)),
+    ("My feature name", lambda: check_my_feature(target)),
 ]
 ```
 
-The string label is used only for progress output to stderr.
+Each entry is a `(label, callable)` pair; the CLI loop invokes the callable so
+the per-check progress line prints as the check actually runs. The string label
+is used only for progress output to stderr.
 
 ---
 
