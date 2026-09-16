@@ -1,22 +1,15 @@
-# Security Policy
+# Security policy
+
+This is a personal, educational security project. It is a lab, not a production
+service — but if you find a genuine vulnerability in the code (as opposed to the
+examples it ships on purpose to demonstrate a risk), I'd like to hear about it.
+
+## Reporting
+
+Email **levaaverianov@gmail.com** with a description and, if you can, a way to
+reproduce it. Please don't file a public issue for a real security bug — reach
+out privately first and give me a reasonable window to fix it before disclosure.
 
 ## Scope
 
-This is an educational security lab. The `vulnerable/` stack contains intentional
-misconfigurations by design — those are expected and are not treated as vulnerabilities.
-
-## Reporting a vulnerability
-
-If you find a security issue in the audit tooling itself (`audit/`), please report it
-privately rather than opening a public issue:
-
-- Open a GitHub Security Advisory:
-  https://github.com/LevaAverGit/security-config-audit-lab-v2/security/advisories/new
-- Or contact the maintainer via the email listed on the GitHub profile.
-
-Please include steps to reproduce and the affected version or commit. I aim to respond
-within a few days.
-
-## Supported versions
-
-The `main` branch is the only supported version.
+The audit tool. The 'vulnerable' stack is deliberately misconfigured as a demo target, not a real exposure.
