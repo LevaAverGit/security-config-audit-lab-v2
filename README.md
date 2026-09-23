@@ -1,6 +1,9 @@
 # Security Config Audit Lab
 
 [![CI](https://github.com/LevaAverGit/security-config-audit-lab-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/LevaAverGit/security-config-audit-lab-v2/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-hardened%20%2B%20vulnerable-000000?logo=flask&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 Local Docker-based security lab for comparing vulnerable and hardened web infrastructure configurations. The project includes Docker Compose environments, a Python audit CLI, rule-based misconfiguration checks, risk scoring, before/after comparison, and Markdown/JSON reports.
 
